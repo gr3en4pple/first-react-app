@@ -1,100 +1,34 @@
 import './App.css';
-import React, { useState } from 'react';
-import TodoItem from './components/TodoItem';
+import React, { useEffect } from 'react';
 import Input from './components/Input';
 import Footer from './components/footer';
-
-const ALL = 0;
-const ACTIVE = 1;
-const COMPLETED = 2;
+import Navbar from './components/navbar';
+import AuthForm from './components/authForm';
+import DisplayItem from './components/DisplayItem';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import ExitToAppSharpIcon from '@material-ui/icons/ExitToAppSharp';
+import { ContextProvider, ContextHook } from './ContextAPI';
+import { AuthProvider, useAuth } from './AuthContext';
 const App = () => {
-
-  const [List, setStateList] = useState([]);
-  const [render, setRender] = useState(ALL);
-
-  const clickHandler = (item) => {
-    const index = List.indexOf(item);
-    const newList = [...List];
-    newList[index].isDone = !newList[index].isDone
-    setStateList(newList);
-  };
-
-  const delHandler = (item) => {
-    const index = List.indexOf(item);
-    const newList = [...List.slice(0, index), ...List.slice(index + 1)];
-    setStateList(newList);
-  };
-
-  const onSubmit = (item) => {
-    if (!item) return;
-    const newList = [{ value: item, isDone:false }, ...List];
-    setStateList(newList);
-  };
-
-  const countActives = () => {
-    if(render === COMPLETED) 
-      return 0;
-    return List.filter((element) => !element.isDone).length;
-  };
-
-  const clearCheckedHandler = () => {
-    const newList = [...List];
-    newList.forEach((element) => {
-      element.isDone = false;
-    });
-    setStateList(newList);
-  };
-
-  const inputCheckHandler = () => {
-    const newList = [...List];
-    newList.forEach((element) => {
-      element.isDone = true;
-    });
-    setStateList(newList);
-  };
-
-  const renderStateHandler = (renderState) => {
-    setRender(renderState);
-  };
-
+  const { isUserLoad } = useAuth();
   return (
-    <div className="App">
-      <Input onCheck={inputCheckHandler} onSubmit={onSubmit} />
-      {(render === ALL &&
-        List.map((element, index) => (
-          <TodoItem
-            delItem={delHandler}
-            onClick={clickHandler}
-            key={index}
-            item={element}
-          />
-        ))) ||
-        (render === ACTIVE &&
-          List.filter((element) => !element.isDone).map((element, index) => (
-            <TodoItem
-              delItem={delHandler}
-              onClick={clickHandler}
-              key={index}
-              item={element}
-            />
-          ))) ||
-        (render === COMPLETED && List.filter((element) => element.isDone)).map(
-          (element, index) => (
-            <TodoItem
-              delItem={delHandler}
-              onClick={clickHandler}
-              key={index}
-              item={element}
-            />
-          )
-        )}
-      <Footer
-        onRenderClick={renderStateHandler}
-        clearCheck={clearCheckedHandler}
-        itemLeft={countActives()}
-        renderState={render}
-      />
-    </div>
+    <AuthProvider>
+      <ContextProvider>
+        <div className="App">
+          <header className="navbar">
+            <Navbar Icons={[ExitToAppSharpIcon, AccountCircleIcon]} />
+          </header>
+          <AuthForm />
+          {!isUserLoad && (
+            <div className="Todo-list">
+              <Input />
+              <DisplayItem />
+              <Footer />
+            </div>
+          )}
+        </div>
+      </ContextProvider>
+    </AuthProvider>
   );
 };
 

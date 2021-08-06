@@ -13,7 +13,6 @@ code {
 }
 
 #root {
-  display:flex;
-  background: hsl(185, 41%, 84%);
-  height:100vh;
+  background: #dedede;
+  min-height:100vh;
 }

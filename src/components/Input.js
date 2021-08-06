@@ -1,33 +1,28 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
 import '../App.css';
-import checkDone from '../svg/tick.svg'
-import checkMark from '../svg/checkMark.svg'
+import { ContextHook } from '../ContextAPI';
+import { useAuth } from '../AuthContext';
 
-
-const Input = ({ onCheck,onSubmit }) => {
+const Input = (props) => {
   const [inputValue, setInputValue] = useState('');
-  const [icon,setIcon] = useState(checkMark)
+  const { onSubmit, onAnonSubmit } = ContextHook();
+  const { user } = useAuth();
   const onChangeHandler = (event) => {
     setInputValue(event.target.value);
   };
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
-    onSubmit(inputValue);
+      if(user)
+        onSubmit(inputValue);
+      else {
+        onAnonSubmit(inputValue)
+      }
     setInputValue('');
   };
-  
-  const onCheckHandler = () => {
-    if(icon === checkMark)
-      setIcon(checkDone)
-    else
-      setIcon(checkMark)
-    onCheck()
-  }
+
   return (
     <form onSubmit={onSubmitHandler} className="Input">
-        <img onClick ={onCheckHandler} className="check-icon" src={icon}></img> 
       <input
         type="text"
         onChange={onChangeHandler}

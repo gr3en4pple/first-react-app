@@ -1,29 +1,27 @@
 import React from 'react';
 import classNames from 'classnames';
 import '../App.css';
-import checkDoneIcon from '../svg/checkDone.svg';
-import checkIcon from '../svg/check.svg';
 import xMark from '../svg/cancel.svg';
-
-const TodoItem = ({ item, onClick, delItem }) => {
-
-  const checkIconHandler = (item) => onClick(item);
-  const delHandler = (item) => delItem(item);
-  const { value , isDone } = item;
-  let icon = checkIcon;
-  if (isDone) icon = checkDoneIcon;
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import { ContextHook } from '../ContextAPI';
+const TodoItem = ({item}) => {
+  const { delHandler, clickHandler } = ContextHook();
+  const {data: {isDone, value} } = item;
+  let Icon = CheckBoxOutlineBlankIcon;
+  if (isDone) Icon = CheckBoxIcon;
   return (
     <div className="TodoItem">
-      <img
-        onClick={() => checkIconHandler(item)}
-        className="check-icon"
-        src={icon}
-      ></img>
-      <div className={classNames('text', { done: isDone })}> {value}</div>
+      <Icon className="check-icon" onClick={() => clickHandler(item)} />
+      <div className="text">
+        <span className={classNames({ checked: isDone })}>
+          {value}
+          <span className={classNames('line', { done: isDone })}></span>
+        </span>
+      </div>
       <img onClick={() => delHandler(item)} src={xMark} className="del-icon" />
     </div>
   );
-  
 };
 
 export default TodoItem;
