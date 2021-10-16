@@ -3,7 +3,7 @@ import '../App.css';
 import { ContextHook } from '../ContextAPI';
 import { useAuth } from '../AuthContext';
 
-const Input = (props) => {
+const Input = () => {
   const [inputValue, setInputValue] = useState('');
   const { onSubmit, onAnonSubmit } = ContextHook();
   const { user } = useAuth();
@@ -28,7 +28,7 @@ const Input = (props) => {
         onChange={onChangeHandler}
         value={inputValue}
         className="Input-box"
-        placeholder="Enter anything here"
+        placeholder="Things to do..."
       />
     </form>
   );

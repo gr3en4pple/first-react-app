@@ -7,12 +7,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body,html {
+  
+  /* overflow:hidden; */
+}
+html.noscroll {
+  overflow:hidden;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
-#root {
-  background: #dedede;
-  min-height:100vh;
-}

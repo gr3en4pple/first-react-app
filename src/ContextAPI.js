@@ -1,36 +1,42 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState} from 'react';
 import { useAuth } from './AuthContext';
 import { db, auth } from './firebase/firebase';
 import firebase from 'firebase';
-import {v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 const ContextAPI = React.createContext();
 
 export function ContextHook() {
   return useContext(ContextAPI);
 }
 
-export const ContextProvider = ({ children }) => {
+ const ContextProvider = ({ children }) => {
   const [render, setRender] = useState(0);
   const [List, setStateList] = useState([]);
-  const { user, setUser, isUserLoad, setUserLoad } = useAuth();
+  const [isChecked, setChecked] = useState(false);
+  const { user, setUser, setUserLoad } = useAuth();
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {  
-        setUser(user);
-        setUserLoad(false);
-        if(user) {
-          db.collection(user.uid)
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+      setUserLoad(false);
+      if (user) {
+        db.collection(user.uid)
           .orderBy('time', 'desc')
           .onSnapshot((snapshot) => {
-            setStateList(snapshot.docs.map(doc => ({
-              key:doc.id,
-              data:doc.data()
-            })))
-          });   
-        }
-        else {
-          setStateList([])
-        }  
-        
+            setStateList(
+              snapshot.docs.map((doc) => ({
+                key: doc.id,
+                data: doc.data(),
+              }))
+            );
+          });
+        db.collection('mode-list').onSnapshot((snapshot) => {
+          const userMode = snapshot.docs.find((doc) => doc.id === user.uid).data().mode
+          setChecked(userMode)
+        });
+      } else {
+        setChecked(false);
+        setStateList([]);
+      }
     });
     return unsubscribe;
   }, []);
@@ -66,7 +72,6 @@ export const ContextProvider = ({ children }) => {
         isDone: false,
       },
     };
-    console.log(newTodo.key);
     const newList = [newTodo, ...List];
     setStateList(newList);
   };
@@ -96,15 +101,13 @@ export const ContextProvider = ({ children }) => {
   };
 
   const delHandler = (item) => {
-      
-      if(user) db.collection(user.uid).doc(item.key).delete();
-      else {
-        const index = List.indexOf(item)  
-        const newList = [...List.slice(0,index),...List.slice(index+1)]
-        setStateList(newList);
-      }
-  
-  }
+    if (user) db.collection(user.uid).doc(item.key).delete();
+    else {
+      const index = List.indexOf(item);
+      const newList = [...List.slice(0, index), ...List.slice(index + 1)];
+      setStateList(newList);
+    }
+  };
   const renderStateHandler = (renderState) => setRender(renderState);
 
   const countActives = () => {
@@ -115,6 +118,7 @@ export const ContextProvider = ({ children }) => {
   const data = {
     render,
     List,
+    isChecked,
     clearCheckedHandler,
     countActives,
     renderStateHandler,
@@ -122,6 +126,9 @@ export const ContextProvider = ({ children }) => {
     clickHandler,
     onSubmit,
     onAnonSubmit,
+    setChecked,
   };
   return <ContextAPI.Provider value={data}>{children}</ContextAPI.Provider>;
 };
+
+export default ContextProvider

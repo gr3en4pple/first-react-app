@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '../AuthContext';
 import classNames from 'classnames';
 import '../App.css';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 const AuthForm = () => {
   const [mail, setMail] = useState('');
   const [pw, setPw] = useState('');
@@ -45,21 +47,23 @@ const AuthForm = () => {
         return;
       }
       try {
-        setUserLoad(true)
+        setUserLoad(true);
         await signUp(mail, pw);
       } catch (error) {
-        setUserLoad(false);
         setError(error.message);
         return;
+      } finally {
+        setUserLoad(false);
       }
     } else if (currentForm === 'Login') {
       try {
-        setUserLoad(true)
+        setUserLoad(true);
         await signIn(mail, pw);
       } catch (error) {
-        setUserLoad(false);
         setError('Wrong email or password');
         return;
+      } finally {
+        setUserLoad(false);
       }
     }
     setUserLoad(false);
@@ -74,17 +78,21 @@ const AuthForm = () => {
         className={classNames(
           'auth-form',
           { slideIn: currentForm },
-          { slideOut: !currentForm },
-          { disabled: isUserLoad }
+          { opa95: isUserLoad }
         )}
       >
+        <div className="loading">
+          {isUserLoad && (
+            <CircularProgress style={{ color: 'rgb(252, 90, 49)' }} />
+          )}
+        </div>
         <div className="auth-form__header">
           <h1 className="auth-form__text-bold">
             {(currentForm === 'Register' && 'Register') ||
               (currentForm === 'Login' && 'Login')}
           </h1>
           <h3
-            onClick={ !isUserLoad ? onChangeForm : undefined}
+            onClick={!isUserLoad ? onChangeForm : undefined}
             className={classNames('auth-form__text-primary')}
           >
             {(currentForm === 'Register' && 'Login') ||

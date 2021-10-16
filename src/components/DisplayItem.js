@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ContextHook } from '../ContextAPI';
 import TodoItem from './TodoItem';
+
 const ALL = 0;
 const ACTIVE = 1;
 const COMPLETED = 2;
@@ -19,8 +20,7 @@ const DisplayItem = () => {
         (render === COMPLETED &&
           List.filter((element) => element.data.isDone).map((element) => (
             <TodoItem item={element} key={element.key} />
-          )))
-      }
+          )))}
     </>
   );
 };
